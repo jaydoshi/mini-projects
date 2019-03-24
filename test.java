@@ -25,7 +25,8 @@ public class test {
 		int heroPoolCount = 0;
 		String algoSelect = "";
 		ArrayList<Hero> heroList = new ArrayList<Hero>();
-
+		
+		// read input from file
 		try {
 			FileReader fr = new FileReader(inputFile);
 			BufferedReader br = new BufferedReader(fr);
@@ -66,7 +67,7 @@ public class test {
 			System.out.println("ioe: " + ioe.getMessage());
 		}
 		
-		
+		// lists for hero placements
 		ArrayList<Hero> teamHeroList = new ArrayList<Hero>();
 		ArrayList<Hero> oppHeroList = new ArrayList<Hero>();
 		ArrayList<Hero> poolHeroList = new ArrayList<Hero>();
@@ -94,28 +95,27 @@ public class test {
 		double currentTeamAdvantage = 0.0;
 		double oppAdvantage = 0.0;
 		
+		// initial sort to make sure branching is right
 		Collections.sort(teamHeroList, new SortID());
 		Collections.sort(oppHeroList, new SortID());
 		Collections.sort(poolHeroList, new SortID());
 
-
-		int outputID = 0;
-		//minimax(teamHeroList, oppHeroList, poolHeroList, teamHeroList.size());
-	
+		int outputID = 0;	
 		
 		if(algoSelect.equals("minimax"))
 		{
-			System.out.println("MINI MAX ENTERED");
+			//minimax
 			outputID = minimax(teamHeroList, oppHeroList, poolHeroList, teamHeroList.size());
 		}
 		else if(algoSelect.equals("ab"))
 		{
-			System.out.println("AB ENTERED");
+			//ab
 			outputID = alphabeta(teamHeroList, oppHeroList, poolHeroList, teamHeroList.size());
 		}
 		
 		System.out.println("The final hero output: "+outputID);
 
+		// write to the output file
 		try {			
 			FileWriter fw = new FileWriter(outputFile);
 			PrintWriter pw = new PrintWriter(fw);
@@ -134,8 +134,13 @@ public class test {
 			System.out.println("ioe: " + ioe.getMessage());
 		}
 		
+		
+		// end
 	}
 	
+	
+	
+	// BEGIN ALPHA-BETA PRUNING
 	public static int alphabeta(ArrayList<Hero> teamHero, ArrayList<Hero> oppHero, ArrayList<Hero> poolHero, int position)
 	{
 		Result r = new Result(0, 0);
@@ -157,7 +162,6 @@ public class test {
 		{
 			double hold = radiantTeamCalculate(teamHero) - direTeamCalculate(oppHero);
 
-			
 			Result r = new Result(hold, teamHero.get(position).getID());
 			
 			return r;
@@ -191,27 +195,12 @@ public class test {
 				
 				//return r;
 				return Collections.max(listOfResults, new SortResult());
-
 			}
 			else
 			{
 				alpha = Math.max(alpha, v);
 			}
 		}
-		
-		/*
-		double tempA = 0;
-		Result r2 = new Result(0,0);
-		for(int i = 0; i < listOfResults.size(); i++)
-		{
-			if(listOfResults.get(i).getResultAdv() >= tempA)
-			{
-				tempA = listOfResults.get(i).getResultAdv();
-				r2.setResultAdv(tempA);
-				r2.setResultID(listOfResults.get(i).getResultID());
-			}
-		}
-		*/
 		
 		return Collections.max(listOfResults, new SortResult());
 	}
@@ -261,32 +250,14 @@ public class test {
 			{
 				beta = Math.min(beta, v);
 			}
-			
-			
-			
-
 		}
 		
-		/*
-		double tempA = 0;
-		Result r2 = new Result(0,0);
-
-		for(int i = 0; i < listOfResults.size(); i++)
-		{
-			if(listOfResults.get(i).getResultAdv() <= tempA)
-			{
-				tempA = listOfResults.get(i).getResultAdv();
-				r2.setResultAdv(tempA);
-				r2.setResultID(listOfResults.get(i).getResultID());
-			}
-		}
-		*/
-		System.out.println(listOfResults.size());
 		return Collections.min(listOfResults, new SortResult());
 	}
 	
 
 	
+	// BEGIN MINIMAX
 	public static int minimax(ArrayList<Hero> teamHero, ArrayList<Hero> oppHero, ArrayList<Hero> poolHero, int position)
 	{	
 		Result r = new Result(0, 0);
@@ -306,7 +277,6 @@ public class test {
 		{
 			double hold = radiantTeamCalculate(teamHero) - direTeamCalculate(oppHero);
 
-			
 			Result r = new Result(hold, teamHero.get(position).getID());
 			
 			return r;
@@ -332,20 +302,6 @@ public class test {
 			Collections.sort(poolHero, new SortID());
 			
 		}
-		
-		/*
-		double tempA = 0;
-		Result r2 = new Result(0,0);
-		for(int i = 0; i < listOfResults.size(); i++)
-		{
-			if(listOfResults.get(i).getResultAdv() >= tempA)
-			{
-				tempA = listOfResults.get(i).getResultAdv();
-				r2.setResultAdv(tempA);
-				r2.setResultID(listOfResults.get(i).getResultID());
-			}
-		}
-		*/
 		
 		return Collections.max(listOfResults, new SortResult());
 	}
@@ -381,23 +337,12 @@ public class test {
 			Collections.sort(poolHero, new SortID());
 		}
 		
-		/*
-		double tempA = 0;
-		Result r2 = new Result(0,0);
-
-		for(int i = 0; i < listOfResults.size(); i++)
-		{
-			if(listOfResults.get(i).getResultAdv() <= tempA)
-			{
-				tempA = listOfResults.get(i).getResultAdv();
-				r2.setResultAdv(tempA);
-				r2.setResultID(listOfResults.get(i).getResultID());
-			}
-		}
-		*/
 		return Collections.min(listOfResults, new SortResult());
 	}
 	
+	
+	
+	// BEGIN ADVANTAGE CALCULATION
 	public static double radiantTeamCalculate(ArrayList<Hero> radiantHeroList)
 	{
 		int synBonus = 120;
@@ -410,6 +355,7 @@ public class test {
 		int lastDigit = 0;
 		HashSet<Integer> synSet = new HashSet<Integer>();
 		
+		// main summation
 		for(int i = 0; i < radiantHeroList.size(); i++)
 		{
 			Hero h = radiantHeroList.get(i);
@@ -425,6 +371,7 @@ public class test {
 		
 		if(synSet.size() >= 5)
 		{
+			// synergy bonus
 			totalAdvantage += synBonus;
 		}
 		
@@ -444,6 +391,7 @@ public class test {
 		int lastDigit = 0;
 		HashSet<Integer> synSet = new HashSet<Integer>();
 		
+		// main summation
 		for(int i = 0; i < direHeroList.size(); i++)
 		{
 			Hero h = direHeroList.get(i);
@@ -459,6 +407,7 @@ public class test {
 		
 		if(synSet.size() >= 5)
 		{
+			// synergy bonus
 			totalAdvantage += synBonus;
 		}
 		
@@ -616,4 +565,61 @@ for(int i = 0; i < teamHero.size(); i++)
 	System.out.println(teamHero.get(i).getID());
 }
 System.out.println("END");
+*/
+
+/*
+double tempA = 0;
+Result r2 = new Result(0,0);
+for(int i = 0; i < listOfResults.size(); i++)
+{
+	if(listOfResults.get(i).getResultAdv() >= tempA)
+	{
+		tempA = listOfResults.get(i).getResultAdv();
+		r2.setResultAdv(tempA);
+		r2.setResultID(listOfResults.get(i).getResultID());
+	}
+}
+*/
+
+/*
+double tempA = 0;
+Result r2 = new Result(0,0);
+
+for(int i = 0; i < listOfResults.size(); i++)
+{
+	if(listOfResults.get(i).getResultAdv() <= tempA)
+	{
+		tempA = listOfResults.get(i).getResultAdv();
+		r2.setResultAdv(tempA);
+		r2.setResultID(listOfResults.get(i).getResultID());
+	}
+}
+*/
+
+/*
+double tempA = 0;
+Result r2 = new Result(0,0);
+for(int i = 0; i < listOfResults.size(); i++)
+{
+	if(listOfResults.get(i).getResultAdv() >= tempA)
+	{
+		tempA = listOfResults.get(i).getResultAdv();
+		r2.setResultAdv(tempA);
+		r2.setResultID(listOfResults.get(i).getResultID());
+	}
+}
+*/
+/*
+double tempA = 0;
+Result r2 = new Result(0,0);
+
+for(int i = 0; i < listOfResults.size(); i++)
+{
+	if(listOfResults.get(i).getResultAdv() <= tempA)
+	{
+		tempA = listOfResults.get(i).getResultAdv();
+		r2.setResultAdv(tempA);
+		r2.setResultID(listOfResults.get(i).getResultID());
+	}
+}
 */
